@@ -62,7 +62,7 @@ class _SingleTrackState extends State<SingleTrack> {
           ),
           Center(
             child: Text(
-              convertJsonToData['title'],
+              convertJsonToData!=null?convertJsonToData['title']:"Loading",
               style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -72,23 +72,17 @@ class _SingleTrackState extends State<SingleTrack> {
           SizedBox(
             height: MediaQuery.of(context).size.height / 16,
           ),
-          Card(
-            color: Colors.indigo,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: Container(
-              width: MediaQuery.of(context).size.width - 60,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.network(
+              convertJsonToData!=null?convertJsonToData['album']['cover_xl']:"",
               height: MediaQuery.of(context).size.height / 3,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image:
-                          NetworkImage(convertJsonToData['album']['cover_xl']),
-                      fit: BoxFit.fill)),
+              width: MediaQuery.of(context).size.width,
             ),
           ),
           ListTile(
             trailing: Text(
-              convertJsonToData['duration'].toString(),
+              convertJsonToData!=null?convertJsonToData['duration'].toString():"Loading",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -99,32 +93,65 @@ class _SingleTrackState extends State<SingleTrack> {
             child: Column(
               children: <Widget>[
                 ListTile(
-                  leading: Text("Artist",style: TextStyle(color: Colors.indigo,fontSize: 18,fontWeight: FontWeight.bold),),
-                  trailing: Text(convertJsonToData['artist']['name'],style: TextStyle(color: Colors.indigo,fontSize: 18,fontWeight: FontWeight.bold)),
+                  leading: Text(
+                    "Artist",
+                    style: TextStyle(
+                        color: Colors.indigo,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  trailing: Text(convertJsonToData!=null?convertJsonToData['artist']['name']:"Loading",
+                      style: TextStyle(
+                          color: Colors.indigo,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold)),
                 ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 32,
                 ),
                 ListTile(
-                  leading: Text("Released date",style: TextStyle(color: Colors.indigo,fontSize: 18,fontWeight: FontWeight.bold)),
-                  trailing: Text(convertJsonToData['release_date'],style: TextStyle(color: Colors.indigo,fontSize: 18,fontWeight: FontWeight.bold)),
+                  leading: Text("Released date",
+                      style: TextStyle(
+                          color: Colors.indigo,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold)),
+                  trailing: Text(convertJsonToData!=null?convertJsonToData['release_date']:"Still loading",
+                      style: TextStyle(
+                          color: Colors.indigo,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold)),
                 ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 32,
                 ),
                 ListTile(
-                  leading: Text("Album",style: TextStyle(color: Colors.indigo,fontSize: 18,fontWeight: FontWeight.bold)),
-                  trailing: Text(convertJsonToData['album']['title'],style: TextStyle(color: Colors.indigo,fontSize: 18,fontWeight: FontWeight.bold)),
+                  leading: Text("Album",
+                      style: TextStyle(
+                          color: Colors.indigo,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold)),
+                  trailing: Text(convertJsonToData!=null?convertJsonToData['album']['title']:"Still loading",
+                      style: TextStyle(
+                          color: Colors.indigo,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold)),
                 ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 32,
                 ),
                 ListTile(
-                    leading: Text("Play full track",style: TextStyle(color: Colors.indigo,fontSize: 18,fontWeight: FontWeight.bold)),
+                    leading: Text("Play full track",
+                        style: TextStyle(
+                            color: Colors.indigo,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold)),
                     trailing: IconButton(
-                        icon: Icon(Icons.play_circle_filled,color: Colors.indigo,),
+                        icon: Icon(
+                          Icons.play_circle_filled,
+                          color: Colors.indigo,
+                        ),
                         onPressed: () {
-                          _launchURL(convertJsonToData['link']);
+                          _launchURL(convertJsonToData['preview']);
                         })),
               ],
             ),

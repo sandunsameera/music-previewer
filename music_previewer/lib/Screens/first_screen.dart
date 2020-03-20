@@ -52,7 +52,7 @@ class _FirstScreenState extends State<FirstScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.indigo,
           title: !isSearching
               ? Text("Welcome to music-previewer")
               : TextField(
