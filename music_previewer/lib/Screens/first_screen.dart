@@ -14,12 +14,21 @@ class _FirstScreenState extends State<FirstScreen> {
   bool isSearching = false;
 
   TextEditingController appBarController = TextEditingController();
-  String apiUrl = "https://deezerdevs-deezer.p.rapidapi.com/search?q=arman malik";
 
   var convertJsonToData;
   http.Response respose;
 
-  Future<Map<String, dynamic>> getResult() async {
+  @override
+  void initState() {
+    super.initState();
+    this.getResult(
+        "https://deezerdevs-deezer.p.rapidapi.com/search?q=${DataParser.query}");
+  }
+
+  // static String query = appBarController.text;
+
+  // String apiUrl = "https://deezerdevs-deezer.p.rapidapi.com/search?q=${DataParser.query}";
+  Future<Map<String, dynamic>> getResult(apiUrl) async {
     respose = await http.get(apiUrl, headers: {
       "Content-Type": "application/json",
       "x-rapidapi-key": "5df91adb64msh026a9441410fb94p1e0a92jsn9512838ab7d5",
@@ -30,14 +39,8 @@ class _FirstScreenState extends State<FirstScreen> {
         convertJsonToData = json.decode(respose.body)['data'];
       });
     }
-    print(json.decode(respose.body)['data'][0]['artist']);
+    // print(json.decode(respose.body)['data'][0]['artist']);
     return json.decode(respose.body);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    this.getResult();
   }
 
   _launchURL(url) async {
@@ -52,9 +55,10 @@ class _FirstScreenState extends State<FirstScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           backgroundColor: Colors.indigo,
           title: !isSearching
-              ? Text("Welcome to music-previewer")
+              ? Text("Previx")
               : TextField(
                   controller: appBarController,
                   style: TextStyle(color: Colors.white),
@@ -72,7 +76,10 @@ class _FirstScreenState extends State<FirstScreen> {
                       setState(() {
                         this.isSearching = false;
                       });
-                      getResult();
+                      DataParser.query = appBarController.text;
+                      getResult(
+                          "https://deezerdevs-deezer.p.rapidapi.com/search?q=${DataParser.query}");
+                      // print(apiUrl);
                     },
                   )
                 : IconButton(
@@ -89,63 +96,78 @@ class _FirstScreenState extends State<FirstScreen> {
   }
 
   Widget _body() {
-    return convertJsonToData != null &&
-            convertJsonToData.length != null &&
-            convertJsonToData.length > 0
-        ? ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount:
-                convertJsonToData.length != null ? convertJsonToData.length : 0,
-            itemBuilder: (BuildContext context, int index) {
-              return InkWell(
-                splashColor: Colors.indigo,
-                onTap: () {
-                  DataParser.trackId = convertJsonToData[index]['id'];
-                  DataParser.albumId = convertJsonToData[index]['album']['id'];
-                  DataParser.artistId = convertJsonToData[index]['artist']['id'];
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SingleTrack()));
-                },
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        height: MediaQuery.of(context).size.height / 4,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: NetworkImage(convertJsonToData[index]
-                                    ['album']['cover_xl']),
-                                fit: BoxFit.fitWidth)),
-                      ),
-                      ListTile(
-                        leading: Text("Song titile : ",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold)),
-                        title: Text(
-                          convertJsonToData[index]['title'],
+    if (DataParser.query == null) {
+      return Container(
+        child: Center(
+          child: Icon(
+            Icons.music_note,
+            size: 300,
+            color: Colors.indigo,
+          ),
+        ),
+      );
+    } else {
+      return convertJsonToData != null &&
+              convertJsonToData.length != null &&
+              convertJsonToData.length > 0
+          ? ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: convertJsonToData.length != null
+                  ? convertJsonToData.length
+                  : 0,
+              itemBuilder: (BuildContext context, int index) {
+                return InkWell(
+                  splashColor: Colors.indigo,
+                  onTap: () {
+                    DataParser.trackId = convertJsonToData[index]['id'];
+                    DataParser.albumId =
+                        convertJsonToData[index]['album']['id'];
+                    DataParser.artistId =
+                        convertJsonToData[index]['artist']['id'];
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => SingleTrack()));
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          height: MediaQuery.of(context).size.height / 4,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: NetworkImage(convertJsonToData[index]
+                                      ['album']['cover_xl']),
+                                  fit: BoxFit.fitWidth)),
                         ),
-                        trailing: IconButton(
-                            icon: Icon(
-                              Icons.play_circle_filled,
-                              color: Colors.indigo,
-                            ),
-                            onPressed: () => _launchURL(
-                                convertJsonToData[index]['preview'])),
-                      )
-                    ],
+                        ListTile(
+                          leading: Text("Song titile : ",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold)),
+                          title: Text(
+                            convertJsonToData[index]['title'],
+                          ),
+                          trailing: IconButton(
+                              icon: Icon(
+                                Icons.play_circle_filled,
+                                color: Colors.indigo,
+                              ),
+                              onPressed: () => _launchURL(
+                                  convertJsonToData[index]['preview'])),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              );
-            })
-        : Container(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
+                );
+              })
+          : Container(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+    }
   }
 }
