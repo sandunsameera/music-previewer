@@ -102,7 +102,7 @@ class _FirstScreenState extends State<FirstScreen> {
           child: Icon(
             Icons.music_note,
             size: 300,
-            color: Colors.indigo,
+            color: Colors.grey,
           ),
         ),
       );
