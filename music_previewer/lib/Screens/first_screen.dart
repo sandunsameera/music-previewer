@@ -24,10 +24,7 @@ class _FirstScreenState extends State<FirstScreen> {
     this.getResult(
         "https://deezerdevs-deezer.p.rapidapi.com/search?q=${DataParser.query}");
   }
-
-  // static String query = appBarController.text;
-
-  // String apiUrl = "https://deezerdevs-deezer.p.rapidapi.com/search?q=${DataParser.query}";
+   
   Future<Map<String, dynamic>> getResult(apiUrl) async {
     respose = await http.get(apiUrl, headers: {
       "Content-Type": "application/json",
@@ -96,7 +93,7 @@ class _FirstScreenState extends State<FirstScreen> {
   }
 
   Widget _body() {
-    if (DataParser.query == null) {
+    if (DataParser.query == null && convertJsonToData!=null){
       return Container(
         child: Center(
           child: Icon(
@@ -106,7 +103,15 @@ class _FirstScreenState extends State<FirstScreen> {
           ),
         ),
       );
-    } else {
+    } 
+    else if(DataParser.query !=null && convertJsonToData == null){
+      return Container(
+        child: Center(
+          child: Text("No results found"),
+        ),
+      );
+    }
+    else{
       return convertJsonToData != null &&
               convertJsonToData.length != null &&
               convertJsonToData.length > 0
