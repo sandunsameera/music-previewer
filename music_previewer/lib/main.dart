@@ -7,6 +7,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      color: Color(0xFF8B78E6),
       debugShowCheckedModeBanner: false,   
       home: FirstScreen(),
     );

@@ -12,6 +12,7 @@ class FirstScreen extends StatefulWidget {
 
 class _FirstScreenState extends State<FirstScreen> {
   bool isSearching = false;
+  String title = "Previx";
 
   TextEditingController appBarController = TextEditingController();
 
@@ -21,10 +22,11 @@ class _FirstScreenState extends State<FirstScreen> {
   @override
   void initState() {
     super.initState();
+    // this.appBarController.text = "";
     this.getResult(
         "https://deezerdevs-deezer.p.rapidapi.com/search?q=${DataParser.query}");
   }
-   
+
   Future<Map<String, dynamic>> getResult(apiUrl) async {
     respose = await http.get(apiUrl, headers: {
       "Content-Type": "application/json",
@@ -48,14 +50,35 @@ class _FirstScreenState extends State<FirstScreen> {
     }
   }
 
+  void _onLoading() {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Dialog(
+        child: new Row(
+          children: [
+            new Text("Searching your query.."),
+            new CircularProgressIndicator(),
+          ],
+        ),
+      );
+    },
+  );
+  new Future.delayed(new Duration(seconds: 5), () {
+    Navigator.pop(context);
+  });
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          
           centerTitle: true,
-          backgroundColor: Colors.indigo,
+          backgroundColor: Color(0xFF192A56),
           title: !isSearching
-              ? Text("Previx")
+              ? Text(title)
               : TextField(
                   controller: appBarController,
                   style: TextStyle(color: Colors.white),
@@ -70,8 +93,12 @@ class _FirstScreenState extends State<FirstScreen> {
                 ? IconButton(
                     icon: Icon(Icons.cancel),
                     onPressed: () {
+                      //-------------------
+                     _onLoading();
+                      //-------------------
                       setState(() {
                         this.isSearching = false;
+                        this.title = appBarController.text;
                       });
                       DataParser.query = appBarController.text;
                       getResult(
@@ -93,7 +120,7 @@ class _FirstScreenState extends State<FirstScreen> {
   }
 
   Widget _body() {
-    if (DataParser.query == null && convertJsonToData!=null){
+    if (DataParser.query == null && convertJsonToData != null) {
       return Container(
         child: Center(
           child: Icon(
@@ -103,15 +130,7 @@ class _FirstScreenState extends State<FirstScreen> {
           ),
         ),
       );
-    } 
-    else if(DataParser.query !=null && convertJsonToData == null){
-      return Container(
-        child: Center(
-          child: Text("No results found"),
-        ),
-      );
-    }
-    else{
+    } else {
       return convertJsonToData != null &&
               convertJsonToData.length != null &&
               convertJsonToData.length > 0
@@ -140,6 +159,7 @@ class _FirstScreenState extends State<FirstScreen> {
                     child: Column(
                       children: <Widget>[
                         Container(
+                          // color: Color(0xFF),
                           height: MediaQuery.of(context).size.height / 4,
                           decoration: BoxDecoration(
                               image: DecorationImage(
@@ -148,13 +168,10 @@ class _FirstScreenState extends State<FirstScreen> {
                                   fit: BoxFit.fitWidth)),
                         ),
                         ListTile(
-                          leading: Text("Song titile : ",
+                          leading: Text(convertJsonToData[index]['title'],
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold)),
-                          title: Text(
-                            convertJsonToData[index]['title'],
-                          ),
                           trailing: IconButton(
                               icon: Icon(
                                 Icons.play_circle_filled,
