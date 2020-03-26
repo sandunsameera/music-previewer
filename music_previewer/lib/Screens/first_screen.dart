@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:audioplayer/audioplayer.dart';
+import 'package:image_fade/image_fade.dart';
 import 'package:music_previewer/Screens/single_track.dart';
-import 'package:music_previewer/Screens/test.dart';
 import 'package:music_previewer/utils/network_dataparser.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -44,15 +43,6 @@ class _FirstScreenState extends State<FirstScreen> {
   http.Response respose;
 
   @override
-  void initState() {
-    super.initState();
-    // this.appBarController.text = "";
-    this.getResult(
-        "https://deezerdevs-deezer.p.rapidapi.com/search?q=${DataParser.query}");
-    initAudioPlayer();
-  }
-
-  @override
   void dispose() {
     _positionSubscription.cancel();
     _audioPlayerStateSubscription.cancel();
@@ -83,6 +73,17 @@ class _FirstScreenState extends State<FirstScreen> {
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // this.appBarController.text = "";
+    this.isMuted = false;
+    this.initAudioPlayer();
+    this.duration = Duration(microseconds: 1);
+    this.getResult(
+        "https://deezerdevs-deezer.p.rapidapi.com/search?q=${DataParser.query}");
+  }
+
   void onComplete() {
     setState(() => playerState = PlayerState.stopped);
   }
@@ -91,6 +92,7 @@ class _FirstScreenState extends State<FirstScreen> {
     await audioPlayer.play(url);
     setState(() {
       playerState = PlayerState.playing;
+      isMuted = false;
     });
   }
 
@@ -114,6 +116,8 @@ class _FirstScreenState extends State<FirstScreen> {
     });
   }
 
+
+
   Future<Map<String, dynamic>> getResult(apiUrl) async {
     respose = await http.get(apiUrl, headers: {
       "Content-Type": "application/json",
@@ -125,16 +129,7 @@ class _FirstScreenState extends State<FirstScreen> {
         convertJsonToData = json.decode(respose.body)['data'];
       });
     }
-    // print(json.decode(respose.body)['data'][0]['artist']);
     return json.decode(respose.body);
-  }
-
-  _launchURL(url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 
   void _onLoading() {
@@ -143,13 +138,16 @@ class _FirstScreenState extends State<FirstScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return Dialog(
-          child: new Column(
+            child: Container(
+          height: 50,
+          width: 100,
+          child: Column(
             children: [
               new Text("Searching your query.."),
               new CircularProgressIndicator(),
             ],
           ),
-        );
+        ));
       },
     );
     new Future.delayed(new Duration(seconds: 5), () {
@@ -205,6 +203,58 @@ class _FirstScreenState extends State<FirstScreen> {
         body: _body());
   }
 
+  void showBottomModel(index) {
+    showModalBottomSheet(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        context: context,
+        builder: (context) {
+          return Container(
+            color: Color(0xFF0A79DF),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                duration == null
+                    ? new Container()
+                    : new Slider(
+                        activeColor: Color(0xFF192A56),
+                        value: position?.inMilliseconds?.toDouble() ?? 0,
+                        onChanged: (double value) =>
+                            audioPlayer.seek((value / 1000).roundToDouble()),
+                        min: 0.0,
+                        max: duration.inMilliseconds.toDouble()),
+                new Row(mainAxisSize: MainAxisSize.min, children: [
+                  new Text(
+                      position != null
+                          ? "${positionText ?? ''} / ${durationText ?? ''}"
+                          : duration != null ? durationText : '',
+                      // ignore: conflicting_dart_import
+                      style: new TextStyle(fontSize: 14.0))
+                ]),
+                new Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                ),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      IconButton(
+                          icon: Icon(Icons.volume_mute),
+                          onPressed: () => mute(true)),
+                      IconButton(
+                          icon: Icon(Icons.play_circle_filled),
+                          onPressed: () =>
+                              play(convertJsonToData[index]['preview'])),
+                      IconButton(
+                          icon: Icon(Icons.stop), onPressed: () => stop())
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+        });
+  }
+
   Widget _body() {
     if (DataParser.query == null && convertJsonToData != null) {
       return Container(
@@ -236,7 +286,7 @@ class _FirstScreenState extends State<FirstScreen> {
                     DataParser.artistId =
                         convertJsonToData[index]['artist']['id'];
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomePage()));
+                        MaterialPageRoute(builder: (context) => SingleTrack()));
                   },
                   child: Card(
                     shape: RoundedRectangleBorder(
@@ -244,14 +294,43 @@ class _FirstScreenState extends State<FirstScreen> {
                     ),
                     child: Column(
                       children: <Widget>[
-                        Container(
-                          // color: Color(0xFF),
+                        ImageFade(
+                          width: MediaQuery.of(context).size.width,
                           height: MediaQuery.of(context).size.height / 4,
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: NetworkImage(convertJsonToData[index]
-                                      ['album']['cover_xl']),
-                                  fit: BoxFit.fitWidth)),
+                          image: NetworkImage(
+                              convertJsonToData[index]['album']['cover_xl']),
+                          fit: BoxFit.cover,
+                          errorBuilder: (BuildContext context, Widget child,
+                              dynamic exception) {
+                            return Container(
+                              color: Color(0xFF6F6D6A),
+                              child: Center(
+                                  child: Icon(Icons.music_video,
+                                      color: Colors.black26, size: 128.0)),
+                            );
+                          },
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent event) {
+                            if (event == null) {
+                              return child;
+                            }
+                            return Center(
+                              child: CircularProgressIndicator(
+                                  value: event.expectedTotalBytes == null
+                                      ? 0.0
+                                      : event.cumulativeBytesLoaded /
+                                          event.expectedTotalBytes),
+                            );
+                          },
+                          placeholder: Container(
+                            color: Color(0xFFCFCDCA),
+                            child: Center(
+                                child: Icon(
+                              Icons.photo,
+                              color: Colors.white30,
+                              size: 128.0,
+                            )),
+                          ),
                         ),
                         ListTile(
                           leading: Text(convertJsonToData[index]['title'],
@@ -264,8 +343,7 @@ class _FirstScreenState extends State<FirstScreen> {
                                 color: Colors.indigo,
                               ),
                               onPressed: () {
-                                // play(convertJsonToData[index]['preview']);
-                                play(convertJsonToData[index]['preview']);
+                                showBottomModel(index);
                               }),
                         )
                       ],
