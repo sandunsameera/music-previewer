@@ -8,7 +8,6 @@ import 'package:music_previewer/Screens/first_screen.dart';
 import 'package:music_previewer/utils/network_dataparser.dart';
 import 'package:http/http.dart' as http;
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class SingleTrack extends StatefulWidget {
   @override
@@ -23,7 +22,6 @@ class _SingleTrackState extends State<SingleTrack> {
   http.Response respose;
 
   final double _initFabHeight = 120.0;
-  double _fabHeight;
   double _panelHeightOpen;
   double _panelHeightClosed = 45.0;
 
@@ -130,7 +128,6 @@ class _SingleTrackState extends State<SingleTrack> {
   void initState() {
     super.initState();
     this.getResult();
-    _fabHeight = _initFabHeight;
     this.duration = Duration(milliseconds: 1);
     this.initAudioPlayer();
   }
@@ -148,10 +145,6 @@ class _SingleTrackState extends State<SingleTrack> {
         panelBuilder: (sc) => _panel(sc),
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(18.0), topRight: Radius.circular(18.0)),
-        onPanelSlide: (double pos) => setState(() {
-          _fabHeight =
-              pos * (_panelHeightOpen - _panelHeightClosed) + _initFabHeight;
-        }),
       ),
     );
   }

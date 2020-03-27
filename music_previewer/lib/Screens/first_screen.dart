@@ -18,12 +18,9 @@ class _FirstScreenState extends State<FirstScreen> {
   bool isSearching = false;
   String title = "Previx";
   TextEditingController appBarController = TextEditingController();
-
   Duration duration;
   Duration position;
-
   AudioPlayer audioPlayer;
-
   PlayerState playerState = PlayerState.stopped;
 
   get isPlaying => playerState == PlayerState.playing;
@@ -35,11 +32,15 @@ class _FirstScreenState extends State<FirstScreen> {
       position != null ? position.toString().split('.').first : '';
 
   bool isMuted = false;
+  int query_index = 24;
+  bool isMore = false;
 
   StreamSubscription _positionSubscription;
   StreamSubscription _audioPlayerStateSubscription;
 
   var convertJsonToData;
+  var moresultsOFJson;
+  var totalJson;
   http.Response respose;
 
   @override
@@ -82,6 +83,8 @@ class _FirstScreenState extends State<FirstScreen> {
     this.duration = Duration(microseconds: 1);
     this.getResult(
         "https://deezerdevs-deezer.p.rapidapi.com/search?q=${DataParser.query}");
+    this.getMoreResult(
+        "https://api.deezer.com/search?redirect_uri=http%253A%252F%252Fguardian.mashape.com%252Fcallback&q=${DataParser.query}&index=$query_index");
   }
 
   void onComplete() {
@@ -116,8 +119,6 @@ class _FirstScreenState extends State<FirstScreen> {
     });
   }
 
-
-
   Future<Map<String, dynamic>> getResult(apiUrl) async {
     respose = await http.get(apiUrl, headers: {
       "Content-Type": "application/json",
@@ -127,6 +128,21 @@ class _FirstScreenState extends State<FirstScreen> {
     if (this.mounted) {
       setState(() {
         convertJsonToData = json.decode(respose.body)['data'];
+      });
+    }
+    return json.decode(respose.body);
+  }
+
+  //for more results
+  Future<Map<String, dynamic>> getMoreResult(apiUrl) async {
+    respose = await http.get(apiUrl, headers: {
+      "Content-Type": "application/json",
+      "x-rapidapi-key": "5df91adb64msh026a9441410fb94p1e0a92jsn9512838ab7d5",
+    });
+
+    if (this.mounted) {
+      setState(() {
+        moresultsOFJson = json.decode(respose.body)['data'];
       });
     }
     return json.decode(respose.body);
@@ -158,6 +174,26 @@ class _FirstScreenState extends State<FirstScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              isMore = true;
+              query_index = query_index + 25;
+            });
+
+            getMoreResult(
+                "https://api.deezer.com/search?redirect_uri=http%253A%252F%252Fguardian.mashape.com%252Fcallback&q=${DataParser.query}&index=$query_index");
+            print(moresultsOFJson);
+            setState(() {
+              totalJson = convertJsonToData + moresultsOFJson;
+            });
+            print("total length " + totalJson.length.toString());
+            print("init length " + convertJsonToData.length.toString());
+            print("last length " + moresultsOFJson.length.toString());
+          },
+          child: Icon(Icons.expand_more),
+          backgroundColor: Color(0xFF192A56),
+        ),
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Color(0xFF192A56),
@@ -243,7 +279,7 @@ class _FirstScreenState extends State<FirstScreen> {
                       IconButton(
                           icon: Icon(Icons.play_circle_filled),
                           onPressed: () =>
-                              play(convertJsonToData[index]['preview'])),
+                              play(totalJson[index]['preview'])),
                       IconButton(
                           icon: Icon(Icons.stop), onPressed: () => stop())
                     ],
@@ -267,24 +303,24 @@ class _FirstScreenState extends State<FirstScreen> {
         ),
       );
     } else {
-      return convertJsonToData != null &&
-              convertJsonToData.length != null &&
-              convertJsonToData.length > 0
+      return totalJson != null &&
+              totalJson.length != null &&
+              totalJson.length > 0
           ? ListView.builder(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
-              itemCount: convertJsonToData.length != null
-                  ? convertJsonToData.length
+              itemCount: totalJson.length != null
+                  ? totalJson.length
                   : 0,
               itemBuilder: (BuildContext context, int index) {
                 return InkWell(
                   splashColor: Colors.indigo,
                   onTap: () {
-                    DataParser.trackId = convertJsonToData[index]['id'];
+                    DataParser.trackId = totalJson[index]['id'];
                     DataParser.albumId =
-                        convertJsonToData[index]['album']['id'];
+                        totalJson[index]['album']['id'];
                     DataParser.artistId =
-                        convertJsonToData[index]['artist']['id'];
+                        totalJson[index]['artist']['id'];
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => SingleTrack()));
                   },
@@ -298,7 +334,7 @@ class _FirstScreenState extends State<FirstScreen> {
                           width: MediaQuery.of(context).size.width,
                           height: MediaQuery.of(context).size.height / 4,
                           image: NetworkImage(
-                              convertJsonToData[index]['album']['cover_xl']),
+                              totalJson[index]['album']['cover_xl']),
                           fit: BoxFit.cover,
                           errorBuilder: (BuildContext context, Widget child,
                               dynamic exception) {
@@ -333,7 +369,7 @@ class _FirstScreenState extends State<FirstScreen> {
                           ),
                         ),
                         ListTile(
-                          leading: Text(convertJsonToData[index]['title'],
+                          leading: Text(totalJson[index]['title'],
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold)),
