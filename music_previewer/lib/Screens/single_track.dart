@@ -88,7 +88,6 @@ class _SingleTrackState extends State<SingleTrack> {
         convertJsonToData = json.decode(respose.body);
       });
     }
-    print(json.decode(respose.body));
     return json.decode(respose.body);
   }
 
@@ -291,7 +290,9 @@ class _SingleTrackState extends State<SingleTrack> {
             ImageFade(
               width: MediaQuery.of(context).size.width - 20,
               height: MediaQuery.of(context).size.height / 4,
-              image: NetworkImage(convertJsonToData!=null?convertJsonToData['album']['cover_xl']:""),
+              image: NetworkImage(convertJsonToData != null
+                  ? convertJsonToData['album']['cover_xl']
+                  : ""),
               fit: BoxFit.cover,
               errorBuilder:
                   (BuildContext context, Widget child, dynamic exception) {
@@ -327,14 +328,14 @@ class _SingleTrackState extends State<SingleTrack> {
             ),
             SizedBox(height: 30),
             duration == null
-                    ? new Container()
-                    : new Slider(
-                        activeColor: Color(0xFFBA2F16),
-                        value: position?.inMilliseconds?.toDouble() ?? 0,
-                        onChanged: (double value) =>
-                            audioPlayer.seek((value / 1000).roundToDouble()),
-                        min: 0.0,
-                        max: duration.inMilliseconds.toDouble()),
+                ? new Container()
+                : new Slider(
+                    activeColor: Color(0xFFBA2F16),
+                    value: position?.inMilliseconds?.toDouble() ?? 0,
+                    onChanged: (double value) =>
+                        audioPlayer.seek((value / 1000).roundToDouble()),
+                    min: 0.0,
+                    max: duration.inMilliseconds.toDouble()),
             new Row(mainAxisSize: MainAxisSize.min, children: [
               new Text(
                   position != null
@@ -345,19 +346,29 @@ class _SingleTrackState extends State<SingleTrack> {
             new Padding(
               padding: const EdgeInsets.only(bottom: 20.0),
             ),
-            
             Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   IconButton(
-                      icon: Icon(Icons.headset_off,size: 40,),
+                      icon: Icon(
+                        Icons.headset_off,
+                        size: 40,
+                      ),
                       onPressed: () => mute(true)),
                   IconButton(
-                      icon: Icon(Icons.play_circle_filled,size: 40,color: Color(0xFF192A56),),
+                      icon: Icon(
+                        Icons.play_circle_filled,
+                        size: 40,
+                        color: Color(0xFF192A56),
+                      ),
                       onPressed: () => play(convertJsonToData['preview'])),
-                  // ),
-                  IconButton(icon: Icon(Icons.stop,size: 40,), onPressed: () => stop())
+                  IconButton(
+                      icon: Icon(
+                        Icons.stop,
+                        size: 40,
+                      ),
+                      onPressed: () => stop())
                 ],
               ),
             )

@@ -77,10 +77,11 @@ class _FirstScreenState extends State<FirstScreen> {
   @override
   void initState() {
     super.initState();
-    // this.appBarController.text = "";
     this.isMuted = false;
     this.initAudioPlayer();
     this.duration = Duration(microseconds: 1);
+
+    totalJson = convertJsonToData;
     this.getResult(
         "https://deezerdevs-deezer.p.rapidapi.com/search?q=${DataParser.query}");
     this.getMoreResult(
@@ -127,7 +128,7 @@ class _FirstScreenState extends State<FirstScreen> {
 
     if (this.mounted) {
       setState(() {
-        convertJsonToData = json.decode(respose.body)['data'];
+        totalJson = json.decode(respose.body)['data'];
       });
     }
     return json.decode(respose.body);
@@ -154,14 +155,28 @@ class _FirstScreenState extends State<FirstScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return Dialog(
-            child: Container(
-          height: 50,
-          width: 100,
-          child: Column(
-            children: [
-              new Text("Searching your query.."),
-              new CircularProgressIndicator(),
-            ],
+            child: Card(
+          color: Color(0xFF192A56),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: Container(
+            height: 150,
+            width: 50,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                new Text(
+                  "Searching your query..",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
+                ),
+                SizedBox(height: 30),
+                new CircularProgressIndicator(),
+              ],
+            ),
           ),
         ));
       },
@@ -169,6 +184,17 @@ class _FirstScreenState extends State<FirstScreen> {
     new Future.delayed(new Duration(seconds: 5), () {
       Navigator.pop(context);
     });
+  }
+
+  _search() {
+    _onLoading();
+    setState(() {
+      this.isSearching = false;
+      this.title = appBarController.text;
+    });
+    DataParser.query = appBarController.text;
+    getResult(
+        "https://deezerdevs-deezer.p.rapidapi.com/search?q=${DataParser.query}");
   }
 
   @override
@@ -183,13 +209,9 @@ class _FirstScreenState extends State<FirstScreen> {
 
             getMoreResult(
                 "https://api.deezer.com/search?redirect_uri=http%253A%252F%252Fguardian.mashape.com%252Fcallback&q=${DataParser.query}&index=$query_index");
-            print(moresultsOFJson);
             setState(() {
-              totalJson = convertJsonToData + moresultsOFJson;
+              totalJson = totalJson + moresultsOFJson;
             });
-            print("total length " + totalJson.length.toString());
-            print("init length " + convertJsonToData.length.toString());
-            print("last length " + moresultsOFJson.length.toString());
           },
           child: Icon(Icons.expand_more),
           backgroundColor: Color(0xFF192A56),
@@ -200,6 +222,10 @@ class _FirstScreenState extends State<FirstScreen> {
           title: !isSearching
               ? Text(title)
               : TextField(
+                  textInputAction: TextInputAction.search,
+                  onChanged: (value) {
+                    _search();
+                  },
                   controller: appBarController,
                   style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
@@ -213,17 +239,7 @@ class _FirstScreenState extends State<FirstScreen> {
                 ? IconButton(
                     icon: Icon(Icons.cancel),
                     onPressed: () {
-                      //-------------------
-                      _onLoading();
-                      //-------------------
-                      setState(() {
-                        this.isSearching = false;
-                        this.title = appBarController.text;
-                      });
-                      DataParser.query = appBarController.text;
-                      getResult(
-                          "https://deezerdevs-deezer.p.rapidapi.com/search?q=${DataParser.query}");
-                      // print(apiUrl);
+                      _search();
                     },
                   )
                 : IconButton(
@@ -263,7 +279,6 @@ class _FirstScreenState extends State<FirstScreen> {
                       position != null
                           ? "${positionText ?? ''} / ${durationText ?? ''}"
                           : duration != null ? durationText : '',
-                      // ignore: conflicting_dart_import
                       style: new TextStyle(fontSize: 14.0))
                 ]),
                 new Padding(
@@ -278,8 +293,7 @@ class _FirstScreenState extends State<FirstScreen> {
                           onPressed: () => mute(true)),
                       IconButton(
                           icon: Icon(Icons.play_circle_filled),
-                          onPressed: () =>
-                              play(totalJson[index]['preview'])),
+                          onPressed: () => play(totalJson[index]['preview'])),
                       IconButton(
                           icon: Icon(Icons.stop), onPressed: () => stop())
                     ],
@@ -309,18 +323,14 @@ class _FirstScreenState extends State<FirstScreen> {
           ? ListView.builder(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
-              itemCount: totalJson.length != null
-                  ? totalJson.length
-                  : 0,
+              itemCount: totalJson.length != null ? totalJson.length : 0,
               itemBuilder: (BuildContext context, int index) {
                 return InkWell(
                   splashColor: Colors.indigo,
                   onTap: () {
                     DataParser.trackId = totalJson[index]['id'];
-                    DataParser.albumId =
-                        totalJson[index]['album']['id'];
-                    DataParser.artistId =
-                        totalJson[index]['artist']['id'];
+                    DataParser.albumId = totalJson[index]['album']['id'];
+                    DataParser.artistId = totalJson[index]['artist']['id'];
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => SingleTrack()));
                   },
