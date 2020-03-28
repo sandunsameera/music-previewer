@@ -4,10 +4,12 @@ import 'dart:convert';
 import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:image_fade/image_fade.dart';
+import 'package:music_previewer/Screens/deezer_site.dart';
 import 'package:music_previewer/Screens/first_screen.dart';
 import 'package:music_previewer/utils/network_dataparser.dart';
 import 'package:http/http.dart' as http;
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:toast/toast.dart';
 
 class SingleTrack extends StatefulWidget {
   @override
@@ -18,7 +20,7 @@ class _SingleTrackState extends State<SingleTrack> {
   String apiUrl =
       "https://deezerdevs-deezer.p.rapidapi.com/track/${DataParser.trackId}";
 
-  var convertJsonToData;
+  static var convertJsonToData;
   http.Response respose;
 
   final double _initFabHeight = 120.0;
@@ -90,6 +92,8 @@ class _SingleTrackState extends State<SingleTrack> {
     }
     return json.decode(respose.body);
   }
+
+  //Calculating duration
 
   void onComplete() {
     setState(() => playerState = PlayerState.stopped);
@@ -166,17 +170,23 @@ class _SingleTrackState extends State<SingleTrack> {
                   color: Colors.black),
             ),
           ),
+          Card(
+            color: Color(0xFF192A56),
+            child: Container(
+              width: MediaQuery.of(context).size.width / 4,
+              height: 10,
+            ),
+          ),
           SizedBox(
             height: MediaQuery.of(context).size.height / 16,
           ),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Image.network(
-              convertJsonToData != null
+          Container(
+            height: MediaQuery.of(context).size.height / 3,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.network(convertJsonToData != null
                   ? convertJsonToData['album']['cover_xl']
-                  : "",
-              height: MediaQuery.of(context).size.height / 3,
-              width: MediaQuery.of(context).size.width,
+                  : ""),
             ),
           ),
           ListTile(
@@ -286,6 +296,13 @@ class _SingleTrackState extends State<SingleTrack> {
                   color: Colors.black,
                   fontWeight: FontWeight.bold),
             ),
+            Card(
+              color: Color(0xFF192A56),
+              child: Container(
+                width: MediaQuery.of(context).size.width / 4,
+                height: 10,
+              ),
+            ),
             SizedBox(height: 30),
             ImageFade(
               width: MediaQuery.of(context).size.width - 20,
@@ -352,10 +369,17 @@ class _SingleTrackState extends State<SingleTrack> {
                 children: <Widget>[
                   IconButton(
                       icon: Icon(
-                        Icons.headset_off,
+                        isMuted == true ? Icons.headset_off : Icons.headset,
                         size: 40,
                       ),
-                      onPressed: () => mute(true)),
+                      onPressed: () {
+                        setState(() {
+                          isMuted = !isMuted;
+                        });
+                        isMuted == true
+                            ? Toast.show("Muted", context,duration:2)
+                            : Toast.show("Unmuted", context,duration:2);
+                      }),
                   IconButton(
                       icon: Icon(
                         Icons.play_circle_filled,
@@ -371,7 +395,27 @@ class _SingleTrackState extends State<SingleTrack> {
                       onPressed: () => stop())
                 ],
               ),
-            )
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                ActionChip(
+                    label: Text("View on youtube"),
+                    backgroundColor: Color(0xFF192A56),
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    onPressed: () {
+                      stop();
+                      DataParser.songUrl =
+                          "${convertJsonToData['title']} + ${convertJsonToData['artist']['name']}";
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DeezerSite()));
+                      print(DataParser.songUrl);
+                    }),
+              ],
+            ),
           ],
         ));
   }

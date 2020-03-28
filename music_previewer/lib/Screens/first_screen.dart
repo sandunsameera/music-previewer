@@ -223,7 +223,7 @@ class _FirstScreenState extends State<FirstScreen> {
               ? Text(title)
               : TextField(
                   textInputAction: TextInputAction.search,
-                  onChanged: (value) {
+                  onSubmitted: (value) {
                     _search();
                   },
                   controller: appBarController,
@@ -239,7 +239,9 @@ class _FirstScreenState extends State<FirstScreen> {
                 ? IconButton(
                     icon: Icon(Icons.cancel),
                     onPressed: () {
-                      _search();
+                      setState(() {
+                        this.isSearching = false;
+                      });
                     },
                   )
                 : IconButton(
