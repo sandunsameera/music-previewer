@@ -32,7 +32,7 @@ class _FirstScreenState extends State<FirstScreen> {
       position != null ? position.toString().split('.').first : '';
 
   bool isMuted = false;
-  int query_index = 24;
+  int queryIndex = 24;
   bool isMore = false;
 
   StreamSubscription _positionSubscription;
@@ -85,7 +85,7 @@ class _FirstScreenState extends State<FirstScreen> {
     this.getResult(
         "https://deezerdevs-deezer.p.rapidapi.com/search?q=${DataParser.query}");
     this.getMoreResult(
-        "https://api.deezer.com/search?redirect_uri=http%253A%252F%252Fguardian.mashape.com%252Fcallback&q=${DataParser.query}&index=$query_index");
+        "https://api.deezer.com/search?redirect_uri=http%253A%252F%252Fguardian.mashape.com%252Fcallback&q=${DataParser.query}&index=$queryIndex");
   }
 
   void onComplete() {
@@ -204,11 +204,11 @@ class _FirstScreenState extends State<FirstScreen> {
           onPressed: () {
             setState(() {
               isMore = true;
-              query_index = query_index + 25;
+              queryIndex = queryIndex + 25;
             });
 
             getMoreResult(
-                "https://api.deezer.com/search?redirect_uri=http%253A%252F%252Fguardian.mashape.com%252Fcallback&q=${DataParser.query}&index=$query_index");
+                "https://api.deezer.com/search?redirect_uri=http%253A%252F%252Fguardian.mashape.com%252Fcallback&q=${DataParser.query}&index=$queryIndex");
             setState(() {
               totalJson = totalJson + moresultsOFJson;
             });

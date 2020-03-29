@@ -23,7 +23,6 @@ class _SingleTrackState extends State<SingleTrack> {
   static var convertJsonToData;
   http.Response respose;
 
-  final double _initFabHeight = 120.0;
   double _panelHeightOpen;
   double _panelHeightClosed = 45.0;
 
@@ -266,6 +265,7 @@ class _SingleTrackState extends State<SingleTrack> {
                             fontSize: 18,
                             fontWeight: FontWeight.bold)),
                     trailing: IconButton(
+                      onPressed: null,
                       icon: Icon(
                         Icons.play_circle_filled,
                         color: Colors.black,
