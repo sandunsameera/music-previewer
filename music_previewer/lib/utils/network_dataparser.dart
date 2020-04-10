@@ -5,4 +5,6 @@ class DataParser {
   static int albumId;
   static String query; 
   static String songUrl;
+  static String artist;
+  static String track;
 }
