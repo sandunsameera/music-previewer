@@ -21,7 +21,13 @@ class _SingleTrackState extends State<SingleTrack> {
       "https://deezerdevs-deezer.p.rapidapi.com/track/${DataParser.trackId}";
 
   static var convertJsonToData;
+  static var convertJsonToDatafull;
+  static var lyricsData;
   http.Response respose;
+  http.Response resposefull;
+
+  bool islyrics = false;
+  String lyricsButton = "View full lyrics";
 
   double _panelHeightOpen;
   double _panelHeightClosed = 45.0;
@@ -90,6 +96,19 @@ class _SingleTrackState extends State<SingleTrack> {
       });
     }
     return json.decode(respose.body);
+  }
+
+  Future<Map<String, dynamic>> getLyrics() async {
+    respose = await http.get(
+        "https://api.lyrics.ovh/v1/${DataParser.artist}/${DataParser.track}",
+        headers: {});
+
+    if (this.mounted) {
+      setState(() {
+        lyricsData = json.decode(respose.body);
+      });
+    }
+    print(lyricsData);
   }
 
   //Calculating duration
@@ -179,15 +198,24 @@ class _SingleTrackState extends State<SingleTrack> {
           SizedBox(
             height: MediaQuery.of(context).size.height / 16,
           ),
-          Container(
-            height: MediaQuery.of(context).size.height / 3,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.network(convertJsonToData != null
-                  ? convertJsonToData['album']['cover_xl']
-                  : ""),
-            ),
-          ),
+          islyrics == false
+              ? Container(
+                  height: MediaQuery.of(context).size.height / 3,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.network(convertJsonToData != null
+                        ? convertJsonToData['album']['cover_xl']
+                        : ""),
+                  ),
+                )
+              : Container(
+                  height: MediaQuery.of(context).size.height / 3,
+                  child: SingleChildScrollView(
+                      child: Text(lyricsData!=null && lyricsData['lyrics'] !=null?
+                    lyricsData['lyrics']:"Sorry no lyrics found",
+                    style: TextStyle(color: Color(0xFF192A56), fontSize: 20),
+                  )),
+                ),
           ListTile(
             trailing: Text(
               convertJsonToData != null
@@ -283,8 +311,8 @@ class _SingleTrackState extends State<SingleTrack> {
     return MediaQuery.removePadding(
         context: context,
         removeTop: true,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: ListView(
+          // crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             SizedBox(height: 10),
             Text(
@@ -375,10 +403,16 @@ class _SingleTrackState extends State<SingleTrack> {
                       onPressed: () {
                         setState(() {
                           isMuted = !isMuted;
+                          mute(true);
                         });
-                        isMuted == true
-                            ? Toast.show("Muted", context,duration:2)
-                            : Toast.show("Unmuted", context,duration:2);
+
+                        if (isMuted == true) {
+                          mute(true);
+                          Toast.show("Muted", context, duration: 2);
+                        } else {
+                          mute(false);
+                          Toast.show("Unmuted", context, duration: 2);
+                        }
                       }),
                   IconButton(
                       icon: Icon(
@@ -398,13 +432,29 @@ class _SingleTrackState extends State<SingleTrack> {
             ),
             SizedBox(height: 20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
+                ActionChip(
+                    label: Text(lyricsButton),
+                    backgroundColor: Color(0xFF192A56),
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    onPressed: () {
+                      setState(() {
+                        islyrics = !islyrics;
+
+                        islyrics == true
+                            ? lyricsButton = "View Cover photo"
+                            : lyricsButton = "View full lyrics";
+                      });
+
+                      getLyrics();
+                    }),
                 ActionChip(
                     label: Text("View on youtube"),
                     backgroundColor: Color(0xFF192A56),
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     onPressed: () {
+                      getLyrics();
                       stop();
                       DataParser.songUrl =
                           "${convertJsonToData['title']} + ${convertJsonToData['artist']['name']}";

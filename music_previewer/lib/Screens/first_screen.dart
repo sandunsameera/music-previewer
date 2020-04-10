@@ -229,7 +229,7 @@ class _FirstScreenState extends State<FirstScreen> {
                   controller: appBarController,
                   style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: "Enter the artist name",
+                    hintText: "Enter artist or track",
                     icon: Icon(Icons.search),
                     hintStyle: TextStyle(color: Colors.white),
                   ),
@@ -333,6 +333,8 @@ class _FirstScreenState extends State<FirstScreen> {
                     DataParser.trackId = totalJson[index]['id'];
                     DataParser.albumId = totalJson[index]['album']['id'];
                     DataParser.artistId = totalJson[index]['artist']['id'];
+                    DataParser.artist = totalJson[index]['artist']['name'];
+                    DataParser.track = totalJson[index]['title'];
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => SingleTrack()));
                   },
@@ -345,8 +347,8 @@ class _FirstScreenState extends State<FirstScreen> {
                         ImageFade(
                           width: MediaQuery.of(context).size.width,
                           height: MediaQuery.of(context).size.height / 4,
-                          image: NetworkImage(
-                              totalJson[index]['album']['cover_xl']),
+                          image: NetworkImage(totalJson!=null?
+                              totalJson[index]['album']['cover_xl']:""),
                           fit: BoxFit.cover,
                           errorBuilder: (BuildContext context, Widget child,
                               dynamic exception) {
