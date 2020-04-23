@@ -105,7 +105,7 @@ class _SingleTrackState extends State<SingleTrack> {
 
     if (this.mounted) {
       setState(() {
-        lyricsData = json.decode(respose.body);
+         lyricsData = json.decode(respose.body);
       });
     }
     print(lyricsData);
