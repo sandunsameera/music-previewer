@@ -1,6 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:music_previewer/Widgets/album.dart';
+import 'package:music_previewer/Widgets/radio.dart';
+
+List _radioData;
 
 class FirstScreen extends StatefulWidget {
   @override
@@ -8,6 +11,20 @@ class FirstScreen extends StatefulWidget {
 }
 
 class _FirstScreenState extends State<FirstScreen> {
+  @override
+  void initState() {
+    this._getRadio();
+    super.initState();
+  }
+
+  Future _getRadio() async {
+    var dio = Dio();
+
+    Response response = await dio.get("https://api.deezer.com/radio");
+    _radioData = response.data['data'];
+    print(_radioData);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,13 +40,13 @@ Widget _body(BuildContext context) {
       _searchBar(),
       _title("Album"),
       _redLine(context),
-      _card(),
+      _cardAlbum(),
       _title("Radios"),
       _redLine(context),
-      _card(),
+      _cardRadio(),
       _title("Charts"),
       _redLine(context),
-      _card(),
+      _cardCharts()
     ],
   );
 }
@@ -53,20 +70,71 @@ Widget _searchBar() {
   );
 }
 
-Widget _card() {
+Widget _cardRadio() {
   return Container(
-    height: 200,
-    child: ListView.builder(
-        shrinkWrap: true,
-        physics: ClampingScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        itemCount: 15,
-        itemBuilder: (BuildContext context, int index) => Album(
-              imageurl:
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/WUSL012.jpg/330px-WUSL012.jpg",
-              name: "lfsnfk",
-            )),
-  );
+      height: 230,
+      child: _radioData != null &&
+              _radioData.length > 0 &&
+              _radioData.length != null
+          ? ListView.builder(
+              shrinkWrap: true,
+              physics: ClampingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              itemCount: _radioData.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Row(
+                  children: <Widget>[
+                    RadioWidget(
+                  imageurl: _radioData[index]['picture_xl'] != null
+                      ? _radioData[index]['picture_xl']
+                      : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                  title: _radioData[index]['title'],
+                ),
+                SizedBox(height: 10,width: 10),
+                  ],
+                );
+              })
+          : Container(child: Text("Fucked")));
+}
+
+Widget _cardAlbum() {
+  return Container(
+      height: 230,
+      child: _radioData != null &&
+              _radioData.length > 0 &&
+              _radioData.length != null
+          ? ListView.builder(
+              shrinkWrap: true,
+              physics: ClampingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              itemCount: _radioData.length,
+              itemBuilder: (BuildContext context, int index) => RadioWidget(
+                    imageurl: _radioData[index]['picture_xl'] != null
+                        ? _radioData[index]['picture_xl']
+                        : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                    title: _radioData[index]['title'],
+                  ))
+          : Container(child: Text("Fucked")));
+}
+
+Widget _cardCharts() {
+  return Container(
+      height: 230,
+      child: _radioData != null &&
+              _radioData.length > 0 &&
+              _radioData.length != null
+          ? ListView.builder(
+              shrinkWrap: true,
+              physics: ClampingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              itemCount: _radioData.length,
+              itemBuilder: (BuildContext context, int index) => RadioWidget(
+                    imageurl: _radioData[index]['picture_xl'] != null
+                        ? _radioData[index]['picture_xl']
+                        : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                    title: _radioData[index]['title'],
+                  ))
+          : Container(child: Text("Fucked")));
 }
 
 Widget _title(String title) {
