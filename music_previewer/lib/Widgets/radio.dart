@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class Radio extends StatelessWidget {
+class RadioWidget extends StatelessWidget {
   final String imageurl;
-  final String name;
+  final String title;
 
-  Radio({this.imageurl, this.name});
+  RadioWidget({this.imageurl, this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +16,7 @@ class Radio extends StatelessWidget {
           padding: const EdgeInsets.all(2.0),
           child: _boxes(
             this.imageurl,
+            this.title,
           ),
         ),
       ],
@@ -23,6 +25,7 @@ class Radio extends StatelessWidget {
 
   Widget _boxes(
     String _image,
+    String _title,
   ) {
     return GestureDetector(
       onTap: () {},
@@ -33,7 +36,7 @@ class Radio extends StatelessWidget {
               elevation: 14.0,
               borderRadius: BorderRadius.circular(24.0),
               shadowColor: Color(0x802196F3),
-              child: Row(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Container(
@@ -51,7 +54,7 @@ class Radio extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
-                        child: Text("Fucking title"),
+                        child: Text(_title,style: GoogleFonts.balooTamma(fontSize: 20),),
                       ),
                     ),
                   ),
