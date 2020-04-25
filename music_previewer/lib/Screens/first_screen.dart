@@ -1,11 +1,17 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:music_previewer/Widgets/album.dart';
 import 'package:music_previewer/Widgets/chart.dart';
 import 'package:music_previewer/Widgets/radio.dart';
 
 List _radioData;
 List _chartData;
+Map _albumData;
+Map _marsh;
+Map _martin;
+Map _daftPunk;
+Map _rihanna;
 
 class FirstScreen extends StatefulWidget {
   @override
@@ -18,21 +24,87 @@ class _FirstScreenState extends State<FirstScreen> {
     super.initState();
     this._getRadio();
     this._getCharts();
+    this._getAlbum();
+    this._getmarsh();
+    this._getMartin();
+    this._daftpunk();
+    this._geRihanna();
+  }
+
+  Future _getAlbum() async {
+    var dio = Dio();
+    Response response = await dio.get("https://api.deezer.com/album/119606");
+    if(this.mounted){
+      setState(() {
+      response.statusCode == 200 ? _albumData = response.data : null;
+    });
+    }
+    print(_albumData);
+  }
+
+  Future _getmarsh() async {
+    var dio = Dio();
+    Response response = await dio.get("https://api.deezer.com/album/71083532");
+    if(this.mounted){
+      setState(() {
+      response.statusCode == 200 ? _marsh = response.data : null;
+    });
+    }
+  }
+
+  Future _geRihanna() async {
+    var dio = Dio();
+    Response response = await dio.get("https://api.deezer.com/album/ 100370402");
+    if(this.mounted){
+      setState(() {
+      response.statusCode == 200 ? _rihanna = response.data : null;
+    });
+    }
+  }
+
+  Future _daftpunk() async {
+    var dio = Dio();
+    Response response = await dio.get("https://api.deezer.com/album/302127");
+    if(this.mounted){
+      setState(() {
+      response.statusCode == 200 ? _daftPunk = response.data : null;
+    });
+    }
+  }
+
+  Future _getMartin() async {
+    var dio = Dio();
+    Response response = await dio.get("https://api.deezer.com/album/13625168");
+   if(this.mounted){
+      setState(() {
+      response.statusCode == 200 ? _martin = response.data : null;
+    });
+   }
   }
 
   Future _getRadio() async {
     var dio = Dio();
 
     Response response = await dio.get("https://api.deezer.com/radio");
-    _radioData = response.data['data'];
-    // print(_radioData);
+    if (this.mounted) {
+      setState(() {
+        response.statusCode == 200
+            ? _radioData = response.data['data']
+            : null;
+      });
+    }
   }
 
   Future _getCharts() async {
     var dio = Dio();
     Response response = await dio.get("https://api.deezer.com/chart");
-    _chartData = response.data['tracks']['data'];
-    print(_chartData[0]['artist']['picture_xl']);
+    if (this.mounted) {
+      setState(() {
+        response.statusCode == 200
+            ? _chartData = response.data['tracks']['data']
+            : null;
+      });
+    }
   }
 
   @override
@@ -48,15 +120,16 @@ Widget _body(BuildContext context) {
     children: <Widget>[
       SizedBox(height: 10),
       _searchBar(),
-      _title("Album"),
-      _redLine(context),
+      _title("Top albums"),
+      _redLine(context, MediaQuery.of(context).size.width / 2),
       _cardAlbum(),
-      _title("Radios"),
-      _redLine(context),
-      _cardRadio(),
       _title("Charts"),
-      _redLine(context),
-      _cardCharts()
+      _redLine(context, MediaQuery.of(context).size.width / 3),
+      _cardCharts(),
+      _title("Radios"),
+      _redLine(context, MediaQuery.of(context).size.width / 3),
+      _cardRadio(),
+      
     ],
   );
 }
@@ -110,20 +183,74 @@ Widget _cardRadio() {
 Widget _cardAlbum() {
   return Container(
       height: 230,
-      child: _radioData != null &&
-              _radioData.length > 0 &&
-              _radioData.length != null
+      child: _albumData != null &&
+              _albumData.length > 0 &&
+              _albumData.length != null
           ? ListView.builder(
               shrinkWrap: true,
               physics: ClampingScrollPhysics(),
               scrollDirection: Axis.horizontal,
-              itemCount: _radioData.length,
-              itemBuilder: (BuildContext context, int index) => RadioWidget(
-                    imageurl: _radioData[index]['picture_xl'] != null
-                        ? _radioData[index]['picture_xl']
-                        : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
-                    title: _radioData[index]['title'],
-                  ))
+              itemCount: 5,
+              itemBuilder: (BuildContext context, int index) {
+                switch (index) {
+                  case 0:
+                    return Row(
+                      children: <Widget>[
+                        Album(
+                        imageurl: _albumData['cover_xl'] != null
+                            ? _albumData['cover_xl']
+                            : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                        title: _albumData['title']),
+                        SizedBox(height:10,width: 10),
+                      ],
+                    );
+                    break;
+                  case 1:
+                    return Row(
+                      children: <Widget>[
+                        Album(
+                        imageurl: _marsh['cover_xl'] != null
+                            ? _marsh['cover_xl']
+                            : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                        title: _marsh['title']),
+                        SizedBox(height: 10,width: 10),
+                      ],
+                    );
+                    break;
+                  case 2:
+                    return Row(
+                      children: <Widget>[
+                        Album(
+                        imageurl: _martin['cover_xl'] != null
+                            ? _martin['cover_xl']
+                            : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                        title: _martin['title']),
+                        SizedBox(height: 10,width: 10,)
+                      ],
+                    );
+                    break;
+                    case 3:
+                    return Album(
+                        imageurl: _daftPunk['cover_xl'] != null
+                            ? _daftPunk['cover_xl']
+                            : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                        title: _daftPunk['title']);
+                    break;
+                    case 4:
+                    return Album(
+                        imageurl: _rihanna['cover_xl'] != null
+                            ? _rihanna['cover_xl']
+                            : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                        title: _rihanna['title']);
+                    break;
+                  default:
+                    return Album(
+                        imageurl: _albumData['cover_xl'] != null
+                            ? _albumData['cover_xl']
+                            : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                        title: _albumData['title']);
+                }
+              })
           : Container(child: Text("Fucked")));
 }
 
@@ -142,7 +269,8 @@ Widget _cardCharts() {
                 return Row(
                   children: <Widget>[
                     Chart(
-                      imageurl: _chartData[index]['artist']['picture_xl'] != null
+                      imageurl: _chartData[index]['artist']['picture_xl'] !=
+                              null
                           ? _chartData[index]['artist']['picture_xl']
                           : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
                       title: _chartData[index]['title'],
@@ -164,14 +292,14 @@ Widget _title(String title) {
   );
 }
 
-Widget _redLine(BuildContext context) {
+Widget _redLine(BuildContext context, double width) {
   return Align(
       alignment: Alignment.bottomLeft,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Container(
           height: 10,
-          width: MediaQuery.of(context).size.width / 3,
+          width: width,
           color: Color(0xFFe81029),
         ),
       ));
