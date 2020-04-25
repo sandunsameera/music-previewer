@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Album extends StatelessWidget {
   final String imageurl;
-  final String name;
+  final String title;
 
-  Album({this.imageurl, this.name});
+  Album({this.imageurl, this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +14,7 @@ class Album extends StatelessWidget {
         SizedBox(height: 8),
         Padding(
           padding: const EdgeInsets.all(2.0),
-          child: _boxes(
-            this.imageurl,
-          ),
+          child: _boxes(this.imageurl, this.title),
         ),
       ],
     );
@@ -23,6 +22,7 @@ class Album extends StatelessWidget {
 
   Widget _boxes(
     String _image,
+    String _title,
   ) {
     return GestureDetector(
       onTap: () {},
@@ -33,7 +33,7 @@ class Album extends StatelessWidget {
               elevation: 14.0,
               borderRadius: BorderRadius.circular(24.0),
               shadowColor: Color(0x802196F3),
-              child: Row(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Container(
@@ -51,10 +51,14 @@ class Album extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
-                        child: Text("Fucking title"),
-                      ),
+                          child: SafeArea(
+                        child: Text(
+                          _title,
+                          style: GoogleFonts.balooTamma(fontSize: 20),
+                        ),
+                      )),
                     ),
-                  ),
+                  )
                 ],
               )),
         ),
