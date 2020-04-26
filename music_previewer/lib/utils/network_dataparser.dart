@@ -7,4 +7,5 @@ class DataParser {
   static String songUrl;
   static String artist;
   static String track;
+  static Map singleAlbum;
 }
