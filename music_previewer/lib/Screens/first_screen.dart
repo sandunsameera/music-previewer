@@ -1,9 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:music_previewer/Screens/albums_screen.dart';
 import 'package:music_previewer/Widgets/album.dart';
 import 'package:music_previewer/Widgets/chart.dart';
 import 'package:music_previewer/Widgets/radio.dart';
+import 'package:music_previewer/utils/network_dataparser.dart';
 
 List _radioData;
 List _chartData;
@@ -34,52 +36,53 @@ class _FirstScreenState extends State<FirstScreen> {
   Future _getAlbum() async {
     var dio = Dio();
     Response response = await dio.get("https://api.deezer.com/album/119606");
-    if(this.mounted){
+    if (this.mounted) {
       setState(() {
-      response.statusCode == 200 ? _albumData = response.data : null;
-    });
+        response.statusCode == 200 ? _albumData = response.data : null;
+      });
     }
-    print(_albumData);
+    print(_albumData['tracks']['data'].length);
   }
 
   Future _getmarsh() async {
     var dio = Dio();
     Response response = await dio.get("https://api.deezer.com/album/71083532");
-    if(this.mounted){
+    if (this.mounted) {
       setState(() {
-      response.statusCode == 200 ? _marsh = response.data : null;
-    });
+        response.statusCode == 200 ? _marsh = response.data : null;
+      });
     }
   }
 
   Future _geRihanna() async {
     var dio = Dio();
-    Response response = await dio.get("https://api.deezer.com/album/ 100370402");
-    if(this.mounted){
+    Response response =
+        await dio.get("https://api.deezer.com/album/ 100370402");
+    if (this.mounted) {
       setState(() {
-      response.statusCode == 200 ? _rihanna = response.data : null;
-    });
+        response.statusCode == 200 ? _rihanna = response.data : null;
+      });
     }
   }
 
   Future _daftpunk() async {
     var dio = Dio();
     Response response = await dio.get("https://api.deezer.com/album/302127");
-    if(this.mounted){
+    if (this.mounted) {
       setState(() {
-      response.statusCode == 200 ? _daftPunk = response.data : null;
-    });
+        response.statusCode == 200 ? _daftPunk = response.data : null;
+      });
     }
   }
 
   Future _getMartin() async {
     var dio = Dio();
     Response response = await dio.get("https://api.deezer.com/album/13625168");
-   if(this.mounted){
+    if (this.mounted) {
       setState(() {
-      response.statusCode == 200 ? _martin = response.data : null;
-    });
-   }
+        response.statusCode == 200 ? _martin = response.data : null;
+      });
+    }
   }
 
   Future _getRadio() async {
@@ -88,9 +91,7 @@ class _FirstScreenState extends State<FirstScreen> {
     Response response = await dio.get("https://api.deezer.com/radio");
     if (this.mounted) {
       setState(() {
-        response.statusCode == 200
-            ? _radioData = response.data['data']
-            : null;
+        response.statusCode == 200 ? _radioData = response.data['data'] : null;
       });
     }
   }
@@ -122,14 +123,18 @@ Widget _body(BuildContext context) {
       _searchBar(),
       _title("Top albums"),
       _redLine(context, MediaQuery.of(context).size.width / 2),
-      _cardAlbum(),
+      InkWell(
+        onTap: () {
+          print(1);
+        },
+        child: _cardAlbum(),
+      ),
       _title("Charts"),
       _redLine(context, MediaQuery.of(context).size.width / 3),
       _cardCharts(),
       _title("Radios"),
       _redLine(context, MediaQuery.of(context).size.width / 3),
       _cardRadio(),
-      
     ],
   );
 }
@@ -194,26 +199,35 @@ Widget _cardAlbum() {
               itemBuilder: (BuildContext context, int index) {
                 switch (index) {
                   case 0:
-                    return Row(
-                      children: <Widget>[
-                        Album(
-                        imageurl: _albumData['cover_xl'] != null
-                            ? _albumData['cover_xl']
-                            : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
-                        title: _albumData['title']),
-                        SizedBox(height:10,width: 10),
-                      ],
+                    return InkWell(
+                      onTap: () {
+                        DataParser.singleAlbum = _albumData;
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AlbumScreen()));
+                      },
+                      child: Row(
+                        children: <Widget>[
+                          Album(
+                              imageurl: _albumData['cover_xl'] != null
+                                  ? _albumData['cover_xl']
+                                  : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                              title: _albumData['title']),
+                          SizedBox(height: 10, width: 10),
+                        ],
+                      ),
                     );
                     break;
                   case 1:
                     return Row(
                       children: <Widget>[
                         Album(
-                        imageurl: _marsh['cover_xl'] != null
-                            ? _marsh['cover_xl']
-                            : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
-                        title: _marsh['title']),
-                        SizedBox(height: 10,width: 10),
+                            imageurl: _marsh['cover_xl'] != null
+                                ? _marsh['cover_xl']
+                                : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                            title: _marsh['title']),
+                        SizedBox(height: 10, width: 10),
                       ],
                     );
                     break;
@@ -221,22 +235,25 @@ Widget _cardAlbum() {
                     return Row(
                       children: <Widget>[
                         Album(
-                        imageurl: _martin['cover_xl'] != null
-                            ? _martin['cover_xl']
-                            : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
-                        title: _martin['title']),
-                        SizedBox(height: 10,width: 10,)
+                            imageurl: _martin['cover_xl'] != null
+                                ? _martin['cover_xl']
+                                : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                            title: _martin['title']),
+                        SizedBox(
+                          height: 10,
+                          width: 10,
+                        )
                       ],
                     );
                     break;
-                    case 3:
+                  case 3:
                     return Album(
                         imageurl: _daftPunk['cover_xl'] != null
                             ? _daftPunk['cover_xl']
                             : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
                         title: _daftPunk['title']);
                     break;
-                    case 4:
+                  case 4:
                     return Album(
                         imageurl: _rihanna['cover_xl'] != null
                             ? _rihanna['cover_xl']
