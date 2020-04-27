@@ -38,26 +38,31 @@ class Album extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Container(
-                  width: 120,
+                  width: 150,
                   height: 150,
                   child: ClipRRect(
                     borderRadius: new BorderRadius.circular(24.0),
-                    child: Image(
-                      fit: BoxFit.fill,
-                      image: NetworkImage(_image),
+                    child: Center(
+                      child: Image(
+                        fit: BoxFit.fill,
+                        image: NetworkImage(_image),
+                      ),
                     ),
                   ),
                 ),
                 Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                        child: SafeArea(
-                      child: Text(
-                        _title,
-                        style: GoogleFonts.balooTamma(fontSize: 20),
-                      ),
-                    )),
+                  width: 200,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                          child: SafeArea(
+                        child: Text(
+                          _title,
+                          style: GoogleFonts.balooTamma(fontSize: 20),
+                        ),
+                      )),
+                    ),
                   ),
                 )
               ],
