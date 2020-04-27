@@ -46,7 +46,7 @@ class _FirstScreenState extends State<FirstScreen> {
 
   Future _getmarsh() async {
     var dio = Dio();
-    Response response = await dio.get("https://api.deezer.com/album/71083532");
+    Response response = await dio.get("https://api.deezer.com/album/138472122");
     if (this.mounted) {
       setState(() {
         response.statusCode == 200 ? _marsh = response.data : null;
@@ -57,7 +57,7 @@ class _FirstScreenState extends State<FirstScreen> {
   Future _geRihanna() async {
     var dio = Dio();
     Response response =
-        await dio.get("https://api.deezer.com/album/ 100370402");
+        await dio.get("https://api.deezer.com/album/15319389");
     if (this.mounted) {
       setState(() {
         response.statusCode == 200 ? _rihanna = response.data : null;
@@ -77,7 +77,7 @@ class _FirstScreenState extends State<FirstScreen> {
 
   Future _getMartin() async {
     var dio = Dio();
-    Response response = await dio.get("https://api.deezer.com/album/13625168");
+    Response response = await dio.get("https://api.deezer.com/album/97081012");
     if (this.mounted) {
       setState(() {
         response.statusCode == 200 ? _martin = response.data : null;
@@ -220,45 +220,94 @@ Widget _cardAlbum() {
                     );
                     break;
                   case 1:
-                    return Row(
-                      children: <Widget>[
-                        Album(
-                            imageurl: _marsh['cover_xl'] != null
-                                ? _marsh['cover_xl']
-                                : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
-                            title: _marsh['title']),
-                        SizedBox(height: 10, width: 10),
-                      ],
+                    return InkWell(
+                      onTap: () {
+                        DataParser.singleAlbum = _marsh;
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AlbumScreen()));
+                      },
+                      child: Row(
+                        children: <Widget>[
+                          Album(
+                              imageurl: _marsh['cover_xl'] != null
+                                  ? _marsh['cover_xl']
+                                  : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                              title: _marsh['title']),
+                          SizedBox(height: 10, width: 10),
+                        ],
+                      ),
                     );
                     break;
                   case 2:
-                    return Row(
-                      children: <Widget>[
-                        Album(
-                            imageurl: _martin['cover_xl'] != null
-                                ? _martin['cover_xl']
-                                : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
-                            title: _martin['title']),
-                        SizedBox(
-                          height: 10,
-                          width: 10,
-                        )
-                      ],
+                    return InkWell(
+                      onTap: () {
+                        DataParser.singleAlbum = _martin;
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AlbumScreen()));
+                      },
+                      child: Row(
+                        children: <Widget>[
+                          Album(
+                              imageurl: _martin['cover_xl'] != null
+                                  ? _martin['cover_xl']
+                                  : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                              title: _martin['title']),
+                          SizedBox(
+                            height: 10,
+                            width: 10,
+                          )
+                        ],
+                      ),
                     );
                     break;
                   case 3:
-                    return Album(
-                        imageurl: _daftPunk['cover_xl'] != null
-                            ? _daftPunk['cover_xl']
-                            : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
-                        title: _daftPunk['title']);
+                    return InkWell(
+                      onTap: () {
+                        DataParser.singleAlbum = _daftPunk;
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AlbumScreen()));
+                      },
+                      child: Row(
+                        children: <Widget>[
+                          Album(
+                              imageurl: _daftPunk['cover_xl'] != null
+                                  ? _daftPunk['cover_xl']
+                                  : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                              title: _daftPunk['title']),
+                          SizedBox(height: 10, width: 10),
+                        ],
+                      ),
+                    );
                     break;
                   case 4:
-                    return Album(
-                        imageurl: _rihanna['cover_xl'] != null
-                            ? _rihanna['cover_xl']
-                            : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
-                        title: _rihanna['title']);
+                    return InkWell(
+                      onTap: () {
+                        DataParser.singleAlbum = _rihanna;
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AlbumScreen()));
+                      },
+                      child: Row(
+                        children: <Widget>[
+                          Album(
+                              imageurl: _rihanna['cover_xl'] != null
+                                  ? _rihanna['cover_xl']
+                                  : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                              title: _rihanna['title']),
+                          SizedBox(
+                            height: 10,
+                            width: 10,
+                          ),
+                        ],
+                      ),
+                    );
                     break;
                   default:
                     return Album(
