@@ -8,4 +8,5 @@ class DataParser {
   static String artist;
   static String track;
   static Map singleAlbum;
+  static String playingSong;
 }

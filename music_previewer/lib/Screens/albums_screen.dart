@@ -1,7 +1,9 @@
 import 'dart:ui';
 
+import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:music_previewer/Screens/playing_screen.dart';
 import 'package:music_previewer/utils/network_dataparser.dart';
 
 class AlbumScreen extends StatefulWidget {
@@ -43,39 +45,50 @@ class _AlbumScreenState extends State<AlbumScreen> {
   }
 
   Widget buildResultCard(int index) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: Color(0xffbee1e2),
-      elevation: 2.0,
-      child: Stack(
-        children: <Widget>[
-          Container(
-            height: 200,
-            width: double.maxFinite,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: NetworkImage(DataParser.singleAlbum['cover_xl']),
-                fit: BoxFit.cover,
+    return InkWell(
+      onTap: () {
+        DataParser.playingSong = DataParser.singleAlbum['tracks']['data'][index]['title'];
+        DataParser.artist = DataParser.singleAlbum['tracks']['data'][index]['artist']['name'];
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => PlayerScreen()));
+      },
+      child: Card(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        color: Color(0xffbee1e2),
+        elevation: 2.0,
+        child: Stack(
+          children: <Widget>[
+            Container(
+              height: 200,
+              width: double.maxFinite,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(DataParser.singleAlbum['cover_xl']),
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            child: ClipRRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-                child: Container(
-                  alignment: Alignment.center,
-                  color: Colors.grey.withOpacity(0.1),
+              child: ClipRRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                  child: Container(
+                    alignment: Alignment.center,
+                    color: Colors.grey.withOpacity(0.1),
+                  ),
                 ),
               ),
             ),
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Text(
-              DataParser.singleAlbum['tracks']['data'][index]['title'].toString(),
-              style: GoogleFonts.balooTamma(color: Colors.white, fontSize: 23),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                DataParser.singleAlbum['tracks']['data'][index]['title']
+                    .toString(),
+                style:
+                    GoogleFonts.balooTamma(color: Colors.white, fontSize: 23),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
