@@ -1,6 +1,4 @@
 import 'dart:ui';
-
-import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:music_previewer/Screens/playing_screen.dart';
@@ -47,8 +45,12 @@ class _AlbumScreenState extends State<AlbumScreen> {
   Widget buildResultCard(int index) {
     return InkWell(
       onTap: () {
-        DataParser.playingSong = DataParser.singleAlbum['tracks']['data'][index]['title'];
-        DataParser.artist = DataParser.singleAlbum['tracks']['data'][index]['artist']['name'];
+        DataParser.playingSong =
+            DataParser.singleAlbum['tracks']['data'][index]['title'];
+        DataParser.artist =
+            DataParser.singleAlbum['tracks']['data'][index]['artist']['name'];
+        DataParser.previewSong =
+            DataParser.singleAlbum['tracks']['data'][index];
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => PlayerScreen()));
       },
