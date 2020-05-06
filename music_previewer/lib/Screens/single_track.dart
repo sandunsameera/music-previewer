@@ -5,7 +5,6 @@
 // import 'package:flutter/material.dart';
 // import 'package:image_fade/image_fade.dart';
 // import 'package:music_previewer/Screens/deezer_site.dart';
-// import 'package:music_previewer/Screens/first_screen.dart';
 // import 'package:music_previewer/utils/network_dataparser.dart';
 // import 'package:http/http.dart' as http;
 // import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -453,7 +452,7 @@
 //                     label: Text("View on youtube"),
 //                     backgroundColor: Color(0xFF192A56),
 //                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
-//                     onPressed: () {
+//                     // onPressed: () {
 //                       getLyrics();
 //                       stop();
 //                       DataParser.songUrl =

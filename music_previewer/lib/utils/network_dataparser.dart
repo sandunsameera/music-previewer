@@ -9,4 +9,5 @@ class DataParser {
   static String track;
   static Map singleAlbum;
   static String playingSong;
+  static Map previewSong;
 }

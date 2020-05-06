@@ -1,11 +1,11 @@
+import 'package:flute_music_player/flute_music_player.dart';
 import 'package:flutter/material.dart';
 import 'package:music_previewer/utils/network_dataparser.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
+enum PlayerState { stopped, playing, paused }
 const Color backgroundColor = Color(0xffE7E8E8);
-const Color dotColor = Color(0xff040602);
-const String albumArtUrl =
-    'https://mmminimal.com/wp-content/uploads/2011/03/Pink-Floyd-Dark-Side-of-t.jpg';
+const Color dotColor = Color(0xff2a356d);
 
 class PlayerScreen extends StatefulWidget {
   @override
@@ -13,6 +13,112 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
+  final String kUrl = DataParser.previewSong["preview"];
+  Duration duration;
+  Duration position;
+
+  MusicFinder audioPlayer;
+
+  Icon playIcon = Icon(Icons.play_arrow);
+
+  String localFilePath;
+
+  PlayerState playerState = PlayerState.stopped;
+
+  get isPlaying => playerState == PlayerState.playing;
+  get isPaused => playerState == PlayerState.paused;
+
+  get durationText =>
+      duration != null ? duration.toString().split('.').first : '';
+  get positionText =>
+      position != null ? position.toString().split('.').first : '';
+
+  bool isMuted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    initAudioPlayer();
+  }
+
+  Future initAudioPlayer() async {
+    audioPlayer = new MusicFinder();
+    var songs;
+    try {
+      songs = await MusicFinder.allSongs();
+    } catch (e) {
+      print(e.toString());
+    }
+
+    print(songs);
+    audioPlayer.setDurationHandler((d) => setState(() {
+          duration = d;
+        }));
+
+    audioPlayer.setPositionHandler((p) => setState(() {
+          position = p;
+        }));
+
+    audioPlayer.setCompletionHandler(() {
+      onComplete();
+      setState(() {
+        position = duration;
+      });
+    });
+
+    audioPlayer.setErrorHandler((msg) {
+      setState(() {
+        playerState = PlayerState.stopped;
+        duration = new Duration(seconds: 0);
+        position = new Duration(seconds: 0);
+      });
+    });
+    setState(() {
+      print(songs.toString());
+    });
+  }
+
+  Future pause() async {
+    final result = await audioPlayer.pause();
+    if (result == 1) setState(() => playerState = PlayerState.paused);
+  }
+
+  Future stop() async {
+    final result = await audioPlayer.stop();
+    if (result == 1)
+      setState(() {
+        playerState = PlayerState.stopped;
+        position = new Duration();
+      });
+  }
+
+  Future mute(bool muted) async {
+    final result = await audioPlayer.mute(muted);
+    if (result == 1)
+      setState(() {
+        isMuted = muted;
+      });
+  }
+
+  void onComplete() {
+    setState(() => playerState = PlayerState.stopped);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    audioPlayer.stop();
+  }
+
+  Future play() async {
+    final result = await audioPlayer.play(kUrl);
+    if (result == 1)
+      setState(() {
+        print('_AudioAppState.play... PlayerState.playing');
+        playerState = PlayerState.playing;
+      });
+  }
+
   double height, width;
   @override
   Widget build(BuildContext context) {
@@ -45,7 +151,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             children: <Widget>[
-              Text('1:15'),
+              Text("Fuck"),
               Expanded(
                 child: Center(
                   child: Row(
@@ -87,10 +193,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
               ),
             ),
           ),
-          CircleAvatar(
-              radius: 35,
-              backgroundColor: dotColor,
-              child: Icon(Icons.play_arrow))
+          InkWell(
+            onTap: () {
+              play();
+
+              setState(() {
+                playerState = PlayerState.paused;
+              });
+            },
+            child: CircleAvatar(
+                radius: 35,
+                backgroundColor: dotColor,
+                child: playerState == PlayerState.stopped || playerState == PlayerState.paused ? Icon(Icons.play_arrow):Icon(Icons.pause)),
+          ),
         ],
       );
 
@@ -125,7 +240,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         child: SleekCircularSlider(
           min: 0,
           max: 100,
-          initialValue: 70,
+          initialValue: 0,
           onChange: (value) {},
           onChangeEnd: (value) {},
           onChangeStart: (value) {},
