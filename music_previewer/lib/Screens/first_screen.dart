@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:music_previewer/Network/api.dart';
 import 'package:music_previewer/Screens/albums_screen.dart';
 import 'package:music_previewer/Screens/chart_screen.dart';
 import 'package:music_previewer/Widgets/album.dart';
@@ -33,6 +34,8 @@ class _FirstScreenState extends State<FirstScreen> {
     this._daftpunk();
     this._geRihanna();
   }
+
+  Api api = Api();
 
   Future _getAlbum() async {
     var dio = Dio();
@@ -200,7 +203,7 @@ Widget _cardAlbum() {
                   case 0:
                     return InkWell(
                       onTap: () {
-                        // DataParser.singleAlbum = _albumData;
+                        Api.test();
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -245,12 +248,11 @@ Widget _cardAlbum() {
                   case 2:
                     return InkWell(
                       onTap: () {
-                        DataParser.singleAlbum = _martin;
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => AlbumScreen(
-                                      artist: _marsh,
+                                      artist: _martin,
                                     )));
                       },
                       child: Row(

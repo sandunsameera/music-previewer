@@ -25,7 +25,7 @@ class _AlbumScreenState extends State<AlbumScreen> {
       children: <Widget>[
         SizedBox(height: 8),
         Center(
-          child: Text(DataParser.singleAlbum['title'],
+          child: Text(widget.artist['title'],
               style: GoogleFonts.balooTamma(
                   fontSize: 30, color: Color(0xff1c3975))),
         ),
@@ -68,7 +68,7 @@ class _AlbumScreenState extends State<AlbumScreen> {
               width: double.maxFinite,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: NetworkImage(DataParser.singleAlbum['cover_xl']),
+                  image: NetworkImage(widget.artist['cover_xl']),
                   fit: BoxFit.cover,
                 ),
               ),
