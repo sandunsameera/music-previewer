@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:music_previewer/Screens/albums_screen.dart';
+import 'package:music_previewer/Screens/chart_screen.dart';
 import 'package:music_previewer/Widgets/album.dart';
 import 'package:music_previewer/Widgets/chart.dart';
 import 'package:music_previewer/Widgets/radio.dart';
@@ -199,11 +200,13 @@ Widget _cardAlbum() {
                   case 0:
                     return InkWell(
                       onTap: () {
-                        DataParser.singleAlbum = _albumData;
+                        // DataParser.singleAlbum = _albumData;
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => AlbumScreen()));
+                                builder: (context) => AlbumScreen(
+                                      artist: _albumData,
+                                    )));
                       },
                       child: Row(
                         children: <Widget>[
@@ -224,7 +227,8 @@ Widget _cardAlbum() {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => AlbumScreen()));
+                                builder: (context) =>
+                                    AlbumScreen(artist: _marsh)));
                       },
                       child: Row(
                         children: <Widget>[
@@ -245,7 +249,9 @@ Widget _cardAlbum() {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => AlbumScreen()));
+                                builder: (context) => AlbumScreen(
+                                      artist: _marsh,
+                                    )));
                       },
                       child: Row(
                         children: <Widget>[
@@ -269,7 +275,9 @@ Widget _cardAlbum() {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => AlbumScreen()));
+                                builder: (context) => AlbumScreen(
+                                      artist: _daftPunk,
+                                    )));
                       },
                       child: Row(
                         children: <Widget>[
@@ -290,7 +298,9 @@ Widget _cardAlbum() {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => AlbumScreen()));
+                                builder: (context) => AlbumScreen(
+                                      artist: _rihanna,
+                                    )));
                       },
                       child: Row(
                         children: <Widget>[
@@ -332,12 +342,21 @@ Widget _cardCharts() {
               itemBuilder: (BuildContext context, int index) {
                 return Row(
                   children: <Widget>[
-                    Chart(
-                      imageurl: _chartData[index]['artist']['picture_xl'] !=
-                              null
-                          ? _chartData[index]['artist']['picture_xl']
-                          : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
-                      title: _chartData[index]['title'],
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ChartsScreen(id: "fuckoff")));
+                      },
+                      child: Chart(
+                        imageurl: _chartData[index]['artist']['picture_xl'] !=
+                                null
+                            ? _chartData[index]['artist']['picture_xl']
+                            : "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/1000x1000-000000-80-0-0.jpg",
+                        title: _chartData[index]['title'],
+                      ),
                     ),
                     SizedBox(height: 10, width: 10),
                   ],
