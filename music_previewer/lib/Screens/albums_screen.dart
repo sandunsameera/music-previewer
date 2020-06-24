@@ -5,6 +5,9 @@ import 'package:music_previewer/Screens/playing_screen.dart';
 import 'package:music_previewer/utils/network_dataparser.dart';
 
 class AlbumScreen extends StatefulWidget {
+  final Map artist;
+
+  const AlbumScreen({Key key, this.artist}) : super(key: key);
   @override
   _AlbumScreenState createState() => _AlbumScreenState();
 }
@@ -35,7 +38,7 @@ class _AlbumScreenState extends State<AlbumScreen> {
             primary: false,
             shrinkWrap: true,
             children: List<Widget>.generate(
-                DataParser.singleAlbum['tracks']['data'].length, (index) {
+                widget.artist['tracks']['data'].length, (index) {
               return buildResultCard(index);
             })),
       ],
@@ -46,11 +49,10 @@ class _AlbumScreenState extends State<AlbumScreen> {
     return InkWell(
       onTap: () {
         DataParser.playingSong =
-            DataParser.singleAlbum['tracks']['data'][index]['title'];
+            widget.artist['tracks']['data'][index]['title'];
         DataParser.artist =
-            DataParser.singleAlbum['tracks']['data'][index]['artist']['name'];
-        DataParser.previewSong =
-            DataParser.singleAlbum['tracks']['data'][index];
+            widget.artist['tracks']['data'][index]['artist']['name'];
+        DataParser.previewSong = widget.artist['tracks']['data'][index];
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => PlayerScreen()));
       },
@@ -83,8 +85,7 @@ class _AlbumScreenState extends State<AlbumScreen> {
             Align(
               alignment: Alignment.bottomLeft,
               child: Text(
-                DataParser.singleAlbum['tracks']['data'][index]['title']
-                    .toString(),
+                widget.artist['tracks']['data'][index]['title'].toString(),
                 style:
                     GoogleFonts.balooTamma(color: Colors.white, fontSize: 23),
               ),
