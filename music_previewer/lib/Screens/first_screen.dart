@@ -56,8 +56,7 @@ class _FirstScreenState extends State<FirstScreen> {
 
   Future _geRihanna() async {
     var dio = Dio();
-    Response response =
-        await dio.get("https://api.deezer.com/album/15319389");
+    Response response = await dio.get("https://api.deezer.com/album/15319389");
     if (this.mounted) {
       setState(() {
         response.statusCode == 200 ? _rihanna = response.data : null;
@@ -321,7 +320,7 @@ Widget _cardAlbum() {
 
 Widget _cardCharts() {
   return Container(
-      height: 230,
+      height: 300,
       child: _chartData != null &&
               _chartData.length > 0 &&
               _chartData.length != null
