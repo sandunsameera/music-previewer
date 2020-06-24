@@ -28,6 +28,7 @@ class Album extends StatelessWidget {
 
   Widget _boxes(String _image, String _title) {
     return Container(
+      height: 250,
       child: new FittedBox(
         child: Material(
             color: Colors.white,
@@ -36,7 +37,9 @@ class Album extends StatelessWidget {
             shadowColor: Color(0x802196F3),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
+                SizedBox(height: 8),
                 Container(
                   width: 150,
                   height: 150,
@@ -52,6 +55,7 @@ class Album extends StatelessWidget {
                 ),
                 Container(
                   width: 200,
+                  height: 150,
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

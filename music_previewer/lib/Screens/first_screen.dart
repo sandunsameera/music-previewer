@@ -160,7 +160,7 @@ Widget _searchBar() {
 
 Widget _cardRadio() {
   return Container(
-      height: 230,
+      height: 300,
       child: _radioData != null &&
               _radioData.length > 0 &&
               _radioData.length != null
@@ -186,13 +186,12 @@ Widget _cardRadio() {
 }
 
 Widget _cardAlbum() {
-  return Container(
-      height: 230,
+  return SizedBox(
+      height: 300,
       child: _albumData != null &&
               _albumData.length > 0 &&
               _albumData.length != null
           ? ListView.builder(
-              shrinkWrap: true,
               physics: ClampingScrollPhysics(),
               scrollDirection: Axis.horizontal,
               itemCount: 5,
