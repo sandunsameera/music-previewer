@@ -45,4 +45,8 @@ class Api {
     Response response = await dio.get("https://api.deezer.com/chart");
     return response.statusCode == 200 ? response.data : null;
   }
+
+ static void test() {
+    print("fuck");
+  }
 }
