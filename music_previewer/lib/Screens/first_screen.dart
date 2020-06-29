@@ -83,7 +83,7 @@ class _FirstScreenState extends State<FirstScreen> {
     Response response = await dio.get("https://api.deezer.com/album/97081012");
     if (this.mounted) {
       setState(() {
-        response.statusCode == 200 ? _martin = response.data : null;
+        response.statusCode == 200 ? _martin = response.data : empty;
       });
     }
   }
